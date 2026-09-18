@@ -68,7 +68,7 @@ h2{font-size:clamp(2rem,1.3rem + 2.4vw,3.3rem)}
 h3{font-size:1.45rem;font-weight:400}
 p{margin:0 0 1em}
 .wrap{max-width:var(--max);margin:0 auto;padding:0 28px}
-section{padding:112px 0;position:relative}
+section{padding:112px 0;position:relative;overflow-x:clip}
 .eyebrow{display:inline-flex;align-items:center;gap:12px;font:600 .74rem/1 var(--sans);letter-spacing:.24em;text-transform:uppercase;color:var(--ochre);margin-bottom:22px}
 .eyebrow::before{content:"";width:28px;height:1px;background:currentColor}
 .lead{font-size:1.14rem;color:var(--muted);max-width:60ch}
@@ -196,8 +196,8 @@ html[lang=en] .brand .wm{display:none} html[lang=en] .brand .wm-en{display:inlin
 .about{background:var(--sand)}
 .about .wrap{display:grid;grid-template-columns:.8fr 1.2fr;gap:80px;align-items:start}
 .portrait{position:sticky;top:110px}
-.portrait figure{margin:0;background:var(--paper);padding:14px;border-radius:24px;box-shadow:0 26px 50px -34px rgba(63,74,51,.55);max-width:380px}
-.portrait img{width:100%;height:auto;border-radius:14px;cursor:zoom-in}
+
+
 .portrait figcaption{padding:16px 6px 4px;font:300 1.35rem/1.2 var(--serif);color:var(--olive)}
 .portrait figcaption small{display:block;font:600 .72rem/1.4 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--ochre);margin-top:6px}
 .story p{color:var(--muted)}
@@ -320,7 +320,7 @@ footer .tag{margin-top:16px;color:#C9CBB8;max-width:34ch}
   .pill{scroll-snap-align:start}
   .egrid{grid-template-columns:1fr 1fr}
   .path .side,.portrait{position:static}
-  .portrait figure{margin:0 auto;max-width:300px}
+  .portrait .p-stage{margin:0 auto}
   footer .wrap{grid-template-columns:1fr 1fr}
   .fbrand-col{grid-column:1/-1}
 }
@@ -346,9 +346,106 @@ footer .tag{margin-top:16px;color:#C9CBB8;max-width:34ch}
   .js .rv{opacity:1;transform:none}
   .hero-art img{opacity:1;transform:none}
 }
+
+/* ===== v2 effects (18 Sept 2026) ===== */
+@property --ang{syntax:'<angle>';inherits:false;initial-value:0deg}
+.progress{position:fixed;inset:0 0 auto 0;height:2px;z-index:70;pointer-events:none}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--sage),var(--ochre));transform-origin:left;transform:scaleX(var(--sp,0))}
+/* hero letters + float + motes */
+.h1w{display:inline-block}
+.h1w .ch{display:inline-block;opacity:0;transform:translateY(.45em) rotate(4deg);transition:opacity .9s var(--ease),transform .9s var(--ease);transition-delay:calc(var(--i)*70ms + 150ms)}
+.loaded .h1w .ch{opacity:1;transform:none}
+.hero h1 .sub,.pillars-line,.hero .lead,.hero .cta-row{opacity:0;transform:translateY(16px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.loaded .hero h1 .sub{opacity:1;transform:none;transition-delay:.55s}
+.loaded .pillars-line{opacity:1;transform:none;transition-delay:.75s}
+.loaded .hero .lead{opacity:1;transform:none;transition-delay:.9s}
+.loaded .hero .cta-row{opacity:1;transform:none;transition-delay:1.05s}
+.no-js .hero h1 .sub,.no-js .pillars-line,.no-js .hero .lead,.no-js .hero .cta-row{opacity:1;transform:none}
+.hero-art{transform:translate3d(var(--px,0),var(--py,0),0);transition:transform .8s var(--ease)}
+.hero-art img{animation:float 8s ease-in-out 1.4s infinite}
+@keyframes float{0%,100%{translate:0 0}50%{translate:0 -12px}}
+.motes{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.motes i{position:absolute;left:var(--x);bottom:-20px;width:var(--s);height:var(--s);border-radius:50%;background:radial-gradient(circle,rgba(184,137,58,.75),rgba(184,137,58,0) 70%);animation:rise var(--d) linear var(--dl) infinite;opacity:0}
+@keyframes rise{0%{transform:translate(0,0);opacity:0}10%{opacity:.8}50%{transform:translate(24px,-50vh)}90%{opacity:.6}100%{transform:translate(-10px,-105vh);opacity:0}}
+.hero .wrap{position:relative;z-index:1}
+/* reveal variants */
+.js .rv.rv-l{transform:translateX(-28px)}.js .rv.rv-r{transform:translateX(28px)}.js .rv.rv-s{transform:scale(.94)}
+.js .rv.rv-l.in,.js .rv.rv-r.in,.js .rv.rv-s.in{transform:none}
+.js .rv{transition-duration:.7s}
+.eyebrow::before{transition:width .8s var(--ease) .15s}
+.js .rv:not(.in) .eyebrow::before,.js .eyebrow.rv:not(.in)::before{width:0}
+/* pillars draw */
+.pill svg *{stroke-dasharray:160;stroke-dashoffset:0;transition:stroke-dashoffset 1.6s var(--ease)}
+.js .pgrid:not(.in) .pill svg *{stroke-dashoffset:160}
+.pill{transition:background .4s}
+@media (hover:hover){.pill:hover{background:rgba(205,211,190,.25)}.pill:hover svg{transform:translateY(-3px)}.pill svg{transition:transform .4s var(--ease)}}
+/* cards: spotlight + tilt */
+.ecard{position:relative;overflow:hidden}
+.ecard::before{content:"";position:absolute;inset:0;background:radial-gradient(260px circle at var(--mx,50%) var(--my,-40%),rgba(230,210,174,.55),transparent 60%);opacity:0;transition:opacity .4s;pointer-events:none}
+@media (hover:hover){.ecard:hover::before{opacity:1}}
+.ecard>*{position:relative}
+.js .egrid .ecard.rv:not(.in){transform:translateY(26px) scale(.97)}
+.way{transform-style:preserve-3d;transition:transform .5s var(--ease),box-shadow .5s}
+@media (hover:hover){.way:hover{box-shadow:0 30px 60px -38px rgba(63,74,51,.55)}}
+.way::after{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(400px circle at var(--mx,50%) var(--my,0%),rgba(255,255,255,.55),transparent 55%);opacity:0;transition:opacity .4s;pointer-events:none}
+@media (hover:hover){.way:hover::after{opacity:1}}
+.btn{will-change:transform}
+/* meaning chips stagger + bg emblem */
+.js .with.rv li{opacity:0;transform:translateY(12px) scale(.96);transition:opacity .5s var(--ease),transform .5s var(--ease),background .3s}
+.js .with.rv.in li{opacity:1;transform:none}
+.with li:nth-child(2){transition-delay:.07s}.with li:nth-child(3){transition-delay:.14s}.with li:nth-child(4){transition-delay:.21s}.with li:nth-child(5){transition-delay:.28s}.with li:nth-child(6){transition-delay:.35s}
+@media (hover:hover){.with li:hover{background:rgba(255,255,255,.1)}}
+.meaning .em-bg{animation:spin 90s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* ABOUT — portrait stage */
+.about{padding-top:64px;background:radial-gradient(50vw 40vw at 0% 30%,rgba(205,211,190,.45),transparent 65%),radial-gradient(40vw 40vw at 100% 90%,rgba(234,217,200,.6),transparent 60%),var(--paper)}
+.p-stage{position:relative;max-width:380px;padding:26px;isolation:isolate}
+.p-glow{position:absolute;inset:-6%;border-radius:50%;background:radial-gradient(closest-side,rgba(230,210,174,.9),rgba(205,211,190,.45) 55%,transparent 100%);filter:blur(8px);z-index:-2;animation:breathe 9s ease-in-out infinite}
+.p-orbit{position:absolute;inset:-4% -10%;border-radius:50%;border:1px dashed rgba(184,137,58,.45);z-index:-1;animation:spin 40s linear infinite}
+.p-orbit.rev{inset:4% -2%;border:1px solid rgba(63,74,51,.12);animation-duration:55s;animation-direction:reverse}
+.p-orbit i{position:absolute;border-radius:50%}
+.p-orbit .sun{top:-9px;left:calc(50% - 9px);width:18px;height:18px;background:radial-gradient(circle,#D8A94F,var(--ochre));box-shadow:0 0 18px 4px rgba(216,169,79,.55)}
+.p-orbit .moon{bottom:-8px;left:calc(50% - 8px);width:16px;height:16px;background:transparent;box-shadow:-4px 0 0 0 var(--ochre)}
+.p-orbit .dot{top:50%;left:-4px;width:7px;height:7px;background:var(--ochre);opacity:.8}
+.p-orbit.rev .dot{left:auto;right:-4px;background:var(--olive-2);opacity:.5}
+.p-orbit.rev .dot.b{top:12%;right:auto;left:18%;width:5px;height:5px}
+.p-frame{position:relative;margin:0;background:var(--paper);padding:12px;border-radius:26px;box-shadow:0 40px 70px -40px rgba(63,74,51,.65),0 12px 24px -16px rgba(63,74,51,.35);transform:perspective(900px) rotateX(var(--ry,0deg)) rotateY(var(--rx,0deg));transition:transform .6s var(--ease)}
+.p-frame::before{content:"";position:absolute;inset:-2px;border-radius:28px;padding:2px;background:conic-gradient(from var(--ang),var(--ochre),rgba(205,211,190,.2) 25%,var(--sage) 45%,rgba(184,137,58,.15) 65%,var(--ochre));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;animation:ring 8s linear infinite;pointer-events:none}
+@keyframes ring{to{--ang:360deg}}
+.p-frame img{width:100%;height:auto;border-radius:16px;cursor:zoom-in}
+.p-frame figcaption{padding:16px 6px 4px;font:300 1.35rem/1.2 var(--serif);color:var(--olive);text-align:center}
+.p-frame figcaption small{display:block;font:600 .72rem/1.4 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--ochre);margin-top:6px}
+.portrait figure.p-frame{max-width:none}
+/* QUOTE — featured */
+.quote{padding:150px 0;background:radial-gradient(60vw 40vw at 50% 110%,rgba(205,211,190,.7),transparent 70%),linear-gradient(180deg,var(--paper),var(--sage-soft));overflow:hidden;position:relative}
+.ripples{position:absolute;left:50%;top:55%;width:0;height:0;pointer-events:none}
+.ripples i{position:absolute;left:-40vw;top:-40vw;width:80vw;height:80vw;border-radius:50%;border:1px solid rgba(63,74,51,.16);transform:scale(.1);opacity:0;animation:ripple 12s ease-out infinite}
+.ripples i:nth-child(2){animation-delay:3s}.ripples i:nth-child(3){animation-delay:6s}.ripples i:nth-child(4){animation-delay:9s}
+@keyframes ripple{0%{transform:scale(.1);opacity:0}15%{opacity:1}100%{transform:scale(1);opacity:0}}
+.quote .wrap{max-width:1000px;position:relative}
+.q-card{position:relative;margin:0;padding:clamp(48px,6vw,84px) clamp(26px,6vw,90px) clamp(40px,5vw,64px);background:rgba(255,253,248,.78);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.9);border-radius:34px;text-align:center;box-shadow:0 60px 100px -50px rgba(63,74,51,.55),0 24px 40px -28px rgba(63,74,51,.35),inset 0 1px 0 #fff}
+.q-card::before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1.5px;background:linear-gradient(135deg,rgba(184,137,58,.7),rgba(205,211,190,.3) 40%,rgba(184,137,58,.5));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;pointer-events:none}
+.q-mark{position:absolute;top:-58px;left:50%;transform:translateX(-50%);width:104px;height:104px;border-radius:50%;background:var(--olive);color:var(--ochre-soft);font:400 5.4rem/1 var(--serif);display:grid;place-items:center;padding-top:.36em;box-sizing:border-box;box-shadow:0 18px 36px -14px rgba(63,74,51,.7)}
+.quote svg.wave{width:120px;height:26px;stroke:var(--ochre);fill:none;stroke-width:1.4;margin:6px auto 26px;display:block;stroke-dasharray:180;stroke-dashoffset:0;transition:stroke-dashoffset 2s var(--ease) .3s}
+.js .q-card:not(.in) svg.wave{stroke-dashoffset:180}
+.q-text{margin:0;font:300 clamp(1.4rem,1rem + 1.45vw,2.35rem)/1.5 var(--serif);color:var(--olive);text-shadow:0 1px 0 #fff}
+.q-text .qw{display:inline-block;opacity:0;transform:translateY(10px);transition:opacity .6s var(--ease),transform .6s var(--ease);transition-delay:calc(var(--i)*28ms)}
+.q-card.in .q-text .qw{opacity:1;transform:none}
+.q-text strong{font-weight:400;font-style:italic;background:linear-gradient(90deg,var(--ochre),#D9B26A,var(--olive-2),var(--ochre));background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shimmer 7s ease-in-out infinite;text-shadow:none}
+.q-text strong .qw{color:transparent;background:inherit;background-size:inherit;-webkit-background-clip:text;background-clip:text;animation:inherit}
+@keyframes shimmer{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.q-card figcaption{display:flex;align-items:center;justify-content:center;gap:18px;margin-top:34px}
+.q-line{width:56px;height:1px;background:linear-gradient(90deg,transparent,var(--ochre))}
+.q-line:last-child{transform:scaleX(-1)}
+.q-card cite{font:600 .82rem/1 var(--sans);letter-spacing:.34em;text-transform:uppercase;font-style:normal;color:var(--olive)}
+.q-card .orig{margin:26px auto 0;max-width:640px;padding-top:24px;border-top:1px solid var(--line);font:300 italic 1rem/1.6 var(--serif);color:var(--muted)}
+html[lang=en] .q-card .orig{display:none}
+@media (max-width:680px){.quote{padding:120px 0 100px}.q-mark{width:84px;height:84px;top:-46px;font-size:4.4rem}.p-stage{padding:18px;max-width:320px;margin:0 auto}}
+@media (prefers-reduced-motion:reduce){.h1w .ch,.hero h1 .sub,.pillars-line,.hero .lead,.hero .cta-row,.q-text .qw,.js .with.rv li{opacity:1!important;transform:none!important}.motes,.ripples{display:none}.js .pgrid .pill svg *,.quote svg.wave{stroke-dashoffset:0!important}}
 </style>
 </head>
 <body id="top" class="no-js">
+<div class="progress" aria-hidden="true"><i id="progBar"></i></div>
 <a class="skip" href="#main" data-i="skip">Μετάβαση στο περιεχόμενο</a>
 
 <header class="hdr" id="hdr">
@@ -389,9 +486,10 @@ footer .tag{margin-top:16px;color:#C9CBB8;max-width:34ch}
 <main id="main">
 <!-- HERO -->
 <section class="hero" aria-labelledby="h1">
+  <div class="motes" aria-hidden="true"><i style="--x:6%;--d:22s;--s:5px;--dl:-3s"></i><i style="--x:14%;--d:28s;--s:3px;--dl:-11s"></i><i style="--x:23%;--d:19s;--s:4px;--dl:-7s"></i><i style="--x:35%;--d:26s;--s:6px;--dl:-15s"></i><i style="--x:47%;--d:31s;--s:3px;--dl:-2s"></i><i style="--x:58%;--d:24s;--s:5px;--dl:-9s"></i><i style="--x:66%;--d:20s;--s:3px;--dl:-14s"></i><i style="--x:74%;--d:29s;--s:4px;--dl:-5s"></i><i style="--x:83%;--d:23s;--s:6px;--dl:-18s"></i><i style="--x:91%;--d:27s;--s:3px;--dl:-8s"></i><i style="--x:40%;--d:33s;--s:4px;--dl:-21s"></i><i style="--x:79%;--d:35s;--s:5px;--dl:-12s"></i></div>
   <div class="wrap">
     <div class="hero-text">
-      <h1 id="h1"><span data-i="h1a">Μέθεξις</span><span class="sub" data-i="h1b">Ενσώματη Ενεργειακή Πρακτική Προσωπικής Εξέλιξης — εκεί όπου συναντάμε τον εαυτό, το σώμα και τους άλλους.</span></h1>
+      <h1 id="h1"><span class="h1w" data-i="h1a">Μέθεξις</span><span class="sub" data-i="h1b">Ενσώματη Ενεργειακή Πρακτική Προσωπικής Εξέλιξης — εκεί όπου συναντάμε τον εαυτό, το σώμα και τους άλλους.</span></h1>
       <div class="pillars-line" data-i="pl">Κίνηση <i>·</i> Αναπνοή <i>·</i> Βίωμα <i>·</i> Έκφραση <i>·</i> Σύνδεση</div>
       <p class="lead" data-i="hl">Ατομικές και ομαδικές βιωματικές συναντήσεις με την Cristina Donica, στην Ανατολική Αττική. Δεν χρειάζεται προηγούμενη εμπειρία — μόνο η διάθεση να δώσεις λίγο χώρο στον εαυτό σου.</p>
       <div class="cta-row">
@@ -409,11 +507,11 @@ footer .tag{margin-top:16px;color:#C9CBB8;max-width:34ch}
 <!-- INTRO -->
 <section class="intro" id="methexis" aria-labelledby="h-intro">
   <div class="wrap">
-    <div class="rv">
+    <div class="rv rv-l">
       <span class="eyebrow" data-i="ie">Τι είναι η Μέθεξις</span>
       <h2 id="h-intro" data-i="it">Μια πρακτική για να σταματήσεις για λίγο και να στραφείς προς τον εαυτό σου.</h2>
     </div>
-    <div class="body rv d1">
+    <div class="body rv rv-r d1">
       <p data-i="ip1">Η Μέθεξις είναι μια <strong>βιωματική πρακτική προσωπικής εξερεύνησης και ανάπτυξης</strong>, που γεννήθηκε μέσα από μια πολυετή προσωπική και εκπαιδευτική διαδρομή: τη συμβουλευτική, το σώμα και την κίνηση, την αναπνοή, την εξερεύνηση της ενέργειας και, στη συνέχεια, το Ψυχόδραμα, το Κοινωνιόδραμα και τη δύναμη της ομάδας.</p>
       <p data-i="ip2">Κάποια στιγμή όλα αυτά άρχισαν να συνδέονται. Από αυτή τη σύνθεση γεννήθηκε η Μέθεξις: ένας τρόπος να εξερευνήσεις αυτό που συμβαίνει μέσα σου μέσα από το σώμα, την κίνηση, την αναπνοή, το συναίσθημα, την παρατήρηση και τη σχέση.</p>
       <p class="big" data-i="ip3">Δεν χρειάζεται να κάνεις Μέθεξις για να γίνεις κάποιος άλλος. <em>Την κάνεις για να γνωρίσεις καλύτερα αυτό που ήδη είσαι.</em></p>
@@ -434,6 +532,61 @@ footer .tag{margin-top:16px;color:#C9CBB8;max-width:34ch}
   </div>
 </section>
 
+<!-- ABOUT -->
+<section class="about" id="cristina" aria-labelledby="h-about">
+  <div class="wrap">
+    <div class="portrait rv rv-s">
+      <div class="p-stage" id="pStage">
+        <span class="p-glow" aria-hidden="true"></span>
+        <span class="p-orbit" aria-hidden="true"><i class="sun"></i><i class="moon"></i><i class="dot"></i></span>
+        <span class="p-orbit rev" aria-hidden="true"><i class="dot"></i><i class="dot b"></i></span>
+        <figure class="p-frame">
+        <img src="assets/img/cristina-donica-methexis.webp" width="720" height="968" loading="lazy" decoding="async" alt="Η Cristina Donica, δημιουργός και εμψυχώτρια της Μεθέξεως" data-lb>
+        <figcaption>Cristina Donica<small data-i="ar">Δημιουργός & Εμψυχώτρια της Μεθέξεως</small></figcaption>
+      </figure>
+      </div>
+    </div>
+    <div class="story">
+      <div class="rv">
+        <span class="eyebrow" data-i="ae">Η διαδρομή μου</span>
+        <h2 id="h-about" data-i="at">Από το «πού ανήκω» στη Μέθεξη.</h2>
+      </div>
+      <p class="opening rv" data-i="a1">Γεννήθηκα στη Γερμανία από γονείς με καταγωγή από τη Μολδαβία. Μεγάλωσα στη Μολδαβία και στα δέκα μου εγκαταστάθηκα στην Ελλάδα με τη μητέρα μου.</p>
+      <p class="rv" data-i="a2">Από πολύ νωρίς γνώρισα την εμπειρία της αλλαγής, της προσαρμογής και της αναζήτησης του «πού ανήκω». Μεγάλωσα μέσα σε μεγάλο σόι, όπου η καθημερινότητα μοιραζόταν ανάμεσα σε πολλούς ανθρώπους — εκεί έμαθα από μικρή τη σημασία της κοινότητας, της αλληλοβοήθειας και της ανθρώπινης σύνδεσης.</p>
+      <p class="rv" data-i="a3">Αργότερα, η προσωπική και εκπαιδευτική μου διαδρομή με οδήγησε να αναζητήσω τον άνθρωπο μέσα από διαφορετικούς δρόμους: τη συμβουλευτική, το σώμα και την κίνηση, την αναπνοή, την ενέργεια, το συναίσθημα, την έκφραση και τη σχέση.</p>
+      <ul class="trainings rv" aria-label="Εκπαιδεύσεις και πρακτικές">
+        <li data-i="t1">Σύμβουλος Ψυχικής Υγείας — NDI</li>
+        <li data-i="t2">Ψυχόδραμα & Κοινωνιόδραμα</li>
+        <li>Reiki</li>
+        <li>Vibreath</li>
+        <li>Yoga · Tai Chi · Qi Gong</li>
+        <li data-i="t6">Χορός & κίνηση</li>
+        <li>NLP</li>
+        <li data-i="t8">15+ χρόνια προσωπικής ψυχοθεραπείας</li>
+      </ul>
+      <div class="more-story" id="moreStory">
+        <div>
+          <h3 data-i="a4h">Η αρχή: η συμβουλευτική</h3>
+          <p data-i="a4">Ένα από τα πρώτα βήματα της επαγγελματικής μου πορείας ήταν η εκπαίδευσή μου ως Σύμβουλος Ψυχικής Υγείας στην Παρεμβατική Μη Κατευθυντική Προσέγγιση (NDI) του Michael Lo Brot, με εκπαιδευτές τη Νεκταρία Πατεράκη και τον Αριστείδη Στουρνάρα. Με έφερε πιο κοντά στη σχέση με τον άνθρωπο και στην αξία ενός χώρου όπου ο άλλος εκφράζεται χωρίς να οδηγείται σε προκαθορισμένες απαντήσεις.</p>
+          <p data-i="a5">Παράλληλα, για περισσότερα από δεκαπέντε χρόνια βρίσκομαι σε συνεχή προσωπική ψυχοθεραπευτική διαδικασία, ατομικά και ομαδικά — μια πορεία που παραμένει σημαντικό κομμάτι της επαγγελματικής μου εξέλιξης.</p>
+          <h3 data-i="a6h">Το σώμα, η κίνηση και το βίωμα</h3>
+          <p data-i="a6">Από τα επτά μου χρόνια μέχρι σήμερα, η σωματική άσκηση είναι σταθερό μέρος της καθημερινότητάς μου. Στην πορεία γνώρισα τη Yoga, το Tai Chi, το Qi Gong, τον χορό, την κολύμβηση και το pole dance, και άρχισα να βλέπω το σώμα όχι μόνο ως μέσο κίνησης, αλλά ως έναν ζωντανό τόπο εμπειρίας. Συμμετείχα επίσης σε βιωματικές ομάδες και εκπαιδεύσεις, όπως το Vibreath με τον Αριστείδη Στουρνάρα, ομάδες διαλογισμού και NLP.</p>
+          <p class="pull" data-i="a7">Η προσωπική μας εμπειρία δεν βρίσκεται μόνο στη σκέψη. Υπάρχει και στο σώμα, στην αναπνοή, στην κίνηση, στην αίσθηση.</p>
+          <h3 data-i="a8h">Η εξερεύνηση της ενέργειας μέσα από το Reiki</h3>
+          <p data-i="a8">Σημαντικός σταθμός υπήρξε η εκπαίδευσή μου στο Reiki με τη Δήμητρα Μανσούδη. Άρχισα να παρατηρώ περισσότερο τη σχέση ανάμεσα στο σώμα, τη γείωση, την παρουσία και την ενεργειακή εμπειρία — και να βλέπω ότι όλα αυτά μπορούν να συνυπάρχουν σε μια ενιαία βιωματική διαδικασία.</p>
+          <h3 data-i="a9h">Η συνάντηση με το Ψυχόδραμα και το Κοινωνιόδραμα</h3>
+          <p data-i="a9">Η επόμενη μεγάλη συνάντηση ήταν το Ψυχόδραμα, με τον Αντώνη Λιοδάκη και τον Δημήτρη Καράγιωργα, σε βιωματικές ομάδες σε διάφορα μέρη της Ελλάδας — ανάμεσά τους και στη Γαύδο. Εκεί δεν υπήρχε μόνο η σκέψη· υπήρχε η πράξη, το σώμα, η σχέση, η ομάδα και το βίωμα. Γνώρισα την αυθορμησία — την ικανότητα να ανταποκρίνομαι στο «εδώ και τώρα» — και τη δημιουργικότητα, ως νέους τρόπους έκφρασης και σχέσης.</p>
+          <p data-i="a10">Το Κοινωνιόδραμα ανέδειξε ακόμη περισσότερο τη σημασία της κοινότητας, κάτι που συναντήθηκε με τις μνήμες της παιδικής μου ηλικίας: να βλέπω και να βλέπομαι, να ακούω και να ακούγομαι, να μοιράζομαι και να συμμετέχω.</p>
+          <p class="pull" data-i="a11">Δεν χρειάζεται να απορρίψουμε τις διαφορετικές πλευρές του εαυτού μας για να νιώσουμε ολόκληροι. Μπορούμε να τις γνωρίσουμε, να τις ακούσουμε και να τους δώσουμε χώρο.</p>
+          <h3 data-i="a12h">Η σύνθεση</h3>
+          <p data-i="a12">Με τον χρόνο είδα ότι όλες αυτές οι εμπειρίες δεν ήταν ξεχωριστά κομμάτια. Γεννήθηκε η ανάγκη να δημιουργήσω έναν δικό μου χώρο, όπου ο άνθρωπος δεν αντιμετωπίζεται σαν χωριστά κομμάτια, και όπου το σώμα, η αναπνοή, το συναίσθημα, η εσωτερική εμπειρία και η σχέση συνυπάρχουν. Έτσι γεννήθηκε η Μέθεξις — όχι από μία μόνο εκπαίδευση, αλλά από μια πορεία πολλών χρόνων.</p>
+        </div>
+      </div>
+      <button class="story-toggle" type="button" id="storyBtn" aria-expanded="false" aria-controls="moreStory"><span data-i="sb">Διαβάστε όλη τη διαδρομή</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button>
+    </div>
+  </div>
+</section>
+
 <!-- TWO WAYS -->
 <section class="ways" id="tropoi" aria-labelledby="h-ways">
   <div class="wrap">
@@ -442,14 +595,14 @@ footer .tag{margin-top:16px;color:#C9CBB8;max-width:34ch}
       <h2 id="h-ways" data-i="wt">Δύο τρόποι να συναντήσεις την εμπειρία — με την ίδια αξία.</h2>
     </div>
     <div class="wgrid">
-      <article class="way rv">
+      <article class="way rv rv-l">
         <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="20" r="7"/><path d="M32 27c-3 12-2 20 0 30M22 36c6 2 14 2 20 0"/><circle cx="32" cy="32" r="28" stroke-dasharray="2 5"/></svg>
         <span class="tag" data-i="w1t">Ένας χώρος μόνο για εσένα</span>
         <h3 data-i="w1h">Ατομική Μέθεξις</h3>
         <p data-i="w1p1">Στην ατομική συνεδρία δημιουργείται ένας προσωπικός χώρος αφιερωμένος αποκλειστικά σε εσένα. Η διαδικασία κινείται με τον δικό σου ρυθμό και προσαρμόζεται σε αυτό που θέλεις να εξερευνήσεις.</p>
         <p data-i="w1p2">Είναι μια πιο προσωπική συνάντηση με τον εαυτό, όπου στρέφεσαι προς το σώμα, την αναπνοή, το συναίσθημα και την εσωτερική σου εμπειρία.</p>
       </article>
-      <article class="way rv d1">
+      <article class="way rv rv-r d1">
         <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><circle cx="20" cy="24" r="5"/><circle cx="44" cy="24" r="5"/><circle cx="32" cy="18" r="5"/><path d="M12 46c2-8 6-12 8-12s6 4 8 12M36 46c2-8 6-12 8-12s6 4 8 12M26 40c2-8 4-12 6-12s4 4 6 12"/></svg>
         <span class="tag" data-i="w2t">Η δύναμη της ομάδας</span>
         <h3 data-i="w2h">Ομαδική Μέθεξις</h3>
@@ -531,56 +684,6 @@ footer .tag{margin-top:16px;color:#C9CBB8;max-width:34ch}
   </div>
 </section>
 
-<!-- ABOUT -->
-<section class="about" id="cristina" aria-labelledby="h-about">
-  <div class="wrap">
-    <div class="portrait rv">
-      <figure>
-        <img src="assets/img/cristina-donica-methexis.webp" width="720" height="968" loading="lazy" decoding="async" alt="Η Cristina Donica, δημιουργός και εμψυχώτρια της Μεθέξεως" data-lb>
-        <figcaption>Cristina Donica<small data-i="ar">Δημιουργός & Εμψυχώτρια της Μεθέξεως</small></figcaption>
-      </figure>
-    </div>
-    <div class="story">
-      <div class="rv">
-        <span class="eyebrow" data-i="ae">Η διαδρομή μου</span>
-        <h2 id="h-about" data-i="at">Από το «πού ανήκω» στη Μέθεξη.</h2>
-      </div>
-      <p class="opening rv" data-i="a1">Γεννήθηκα στη Γερμανία από γονείς με καταγωγή από τη Μολδαβία. Μεγάλωσα στη Μολδαβία και στα δέκα μου εγκαταστάθηκα στην Ελλάδα με τη μητέρα μου.</p>
-      <p class="rv" data-i="a2">Από πολύ νωρίς γνώρισα την εμπειρία της αλλαγής, της προσαρμογής και της αναζήτησης του «πού ανήκω». Μεγάλωσα μέσα σε μεγάλο σόι, όπου η καθημερινότητα μοιραζόταν ανάμεσα σε πολλούς ανθρώπους — εκεί έμαθα από μικρή τη σημασία της κοινότητας, της αλληλοβοήθειας και της ανθρώπινης σύνδεσης.</p>
-      <p class="rv" data-i="a3">Αργότερα, η προσωπική και εκπαιδευτική μου διαδρομή με οδήγησε να αναζητήσω τον άνθρωπο μέσα από διαφορετικούς δρόμους: τη συμβουλευτική, το σώμα και την κίνηση, την αναπνοή, την ενέργεια, το συναίσθημα, την έκφραση και τη σχέση.</p>
-      <ul class="trainings rv" aria-label="Εκπαιδεύσεις και πρακτικές">
-        <li data-i="t1">Σύμβουλος Ψυχικής Υγείας — NDI</li>
-        <li data-i="t2">Ψυχόδραμα & Κοινωνιόδραμα</li>
-        <li>Reiki</li>
-        <li>Vibreath</li>
-        <li>Yoga · Tai Chi · Qi Gong</li>
-        <li data-i="t6">Χορός & κίνηση</li>
-        <li>NLP</li>
-        <li data-i="t8">15+ χρόνια προσωπικής ψυχοθεραπείας</li>
-      </ul>
-      <div class="more-story" id="moreStory">
-        <div>
-          <h3 data-i="a4h">Η αρχή: η συμβουλευτική</h3>
-          <p data-i="a4">Ένα από τα πρώτα βήματα της επαγγελματικής μου πορείας ήταν η εκπαίδευσή μου ως Σύμβουλος Ψυχικής Υγείας στην Παρεμβατική Μη Κατευθυντική Προσέγγιση (NDI) του Michael Lo Brot, με εκπαιδευτές τη Νεκταρία Πατεράκη και τον Αριστείδη Στουρνάρα. Με έφερε πιο κοντά στη σχέση με τον άνθρωπο και στην αξία ενός χώρου όπου ο άλλος εκφράζεται χωρίς να οδηγείται σε προκαθορισμένες απαντήσεις.</p>
-          <p data-i="a5">Παράλληλα, για περισσότερα από δεκαπέντε χρόνια βρίσκομαι σε συνεχή προσωπική ψυχοθεραπευτική διαδικασία, ατομικά και ομαδικά — μια πορεία που παραμένει σημαντικό κομμάτι της επαγγελματικής μου εξέλιξης.</p>
-          <h3 data-i="a6h">Το σώμα, η κίνηση και το βίωμα</h3>
-          <p data-i="a6">Από τα επτά μου χρόνια μέχρι σήμερα, η σωματική άσκηση είναι σταθερό μέρος της καθημερινότητάς μου. Στην πορεία γνώρισα τη Yoga, το Tai Chi, το Qi Gong, τον χορό, την κολύμβηση και το pole dance, και άρχισα να βλέπω το σώμα όχι μόνο ως μέσο κίνησης, αλλά ως έναν ζωντανό τόπο εμπειρίας. Συμμετείχα επίσης σε βιωματικές ομάδες και εκπαιδεύσεις, όπως το Vibreath με τον Αριστείδη Στουρνάρα, ομάδες διαλογισμού και NLP.</p>
-          <p class="pull" data-i="a7">Η προσωπική μας εμπειρία δεν βρίσκεται μόνο στη σκέψη. Υπάρχει και στο σώμα, στην αναπνοή, στην κίνηση, στην αίσθηση.</p>
-          <h3 data-i="a8h">Η εξερεύνηση της ενέργειας μέσα από το Reiki</h3>
-          <p data-i="a8">Σημαντικός σταθμός υπήρξε η εκπαίδευσή μου στο Reiki με τη Δήμητρα Μανσούδη. Άρχισα να παρατηρώ περισσότερο τη σχέση ανάμεσα στο σώμα, τη γείωση, την παρουσία και την ενεργειακή εμπειρία — και να βλέπω ότι όλα αυτά μπορούν να συνυπάρχουν σε μια ενιαία βιωματική διαδικασία.</p>
-          <h3 data-i="a9h">Η συνάντηση με το Ψυχόδραμα και το Κοινωνιόδραμα</h3>
-          <p data-i="a9">Η επόμενη μεγάλη συνάντηση ήταν το Ψυχόδραμα, με τον Αντώνη Λιοδάκη και τον Δημήτρη Καράγιωργα, σε βιωματικές ομάδες σε διάφορα μέρη της Ελλάδας — ανάμεσά τους και στη Γαύδο. Εκεί δεν υπήρχε μόνο η σκέψη· υπήρχε η πράξη, το σώμα, η σχέση, η ομάδα και το βίωμα. Γνώρισα την αυθορμησία — την ικανότητα να ανταποκρίνομαι στο «εδώ και τώρα» — και τη δημιουργικότητα, ως νέους τρόπους έκφρασης και σχέσης.</p>
-          <p data-i="a10">Το Κοινωνιόδραμα ανέδειξε ακόμη περισσότερο τη σημασία της κοινότητας, κάτι που συναντήθηκε με τις μνήμες της παιδικής μου ηλικίας: να βλέπω και να βλέπομαι, να ακούω και να ακούγομαι, να μοιράζομαι και να συμμετέχω.</p>
-          <p class="pull" data-i="a11">Δεν χρειάζεται να απορρίψουμε τις διαφορετικές πλευρές του εαυτού μας για να νιώσουμε ολόκληροι. Μπορούμε να τις γνωρίσουμε, να τις ακούσουμε και να τους δώσουμε χώρο.</p>
-          <h3 data-i="a12h">Η σύνθεση</h3>
-          <p data-i="a12">Με τον χρόνο είδα ότι όλες αυτές οι εμπειρίες δεν ήταν ξεχωριστά κομμάτια. Γεννήθηκε η ανάγκη να δημιουργήσω έναν δικό μου χώρο, όπου ο άνθρωπος δεν αντιμετωπίζεται σαν χωριστά κομμάτια, και όπου το σώμα, η αναπνοή, το συναίσθημα, η εσωτερική εμπειρία και η σχέση συνυπάρχουν. Έτσι γεννήθηκε η Μέθεξις — όχι από μία μόνο εκπαίδευση, αλλά από μια πορεία πολλών χρόνων.</p>
-        </div>
-      </div>
-      <button class="story-toggle" type="button" id="storyBtn" aria-expanded="false" aria-controls="moreStory"><span data-i="sb">Διαβάστε όλη τη διαδρομή</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button>
-    </div>
-  </div>
-</section>
-
 <!-- MEANING -->
 <section class="meaning" aria-labelledby="h-mean">
   <img class="em-bg" src="assets/img/methexis-emblem-640.webp" alt="" width="640" height="886" loading="lazy">
@@ -650,11 +753,19 @@ footer .tag{margin-top:16px;color:#C9CBB8;max-width:34ch}
 
 <!-- QUOTE (last word) -->
 <section class="quote" aria-label="Απόφθεγμα">
-  <div class="wrap rv">
-    <svg class="wave" viewBox="0 0 120 26" aria-hidden="true"><path d="M2 13c10-10 20 10 29 0s19-10 29 0 19 10 29 0 19-10 29 0"/></svg>
-    <blockquote data-i="qq">«Το νερό είναι ρευστό, απαλό και ενδοτικό. Όμως το νερό φθείρει τον βράχο, που είναι άκαμπτος και δεν μπορεί να υποχωρήσει. Κατά κανόνα, ό,τι είναι ρευστό, απαλό και ενδοτικό θα υπερισχύσει όσων είναι άκαμπτα και σκληρά. Κι αυτό είναι ένα ακόμη παράδοξο: <strong>ό,τι είναι απαλό, είναι δυνατό.</strong>»</blockquote>
-    <p class="orig" lang="en">“Water is fluid, soft, and yielding. But water will wear away rock, which is rigid and cannot yield. As a rule, whatever is fluid, soft, and yielding will overcome whatever is rigid and hard. This is another paradox: what is soft is strong.”</p>
-    <cite data-i="qc">Λάο Τσε</cite>
+  <div class="ripples" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="wrap">
+    <figure class="q-card rv rv-s">
+      <span class="q-mark" aria-hidden="true">“</span>
+      <svg class="wave" viewBox="0 0 120 26" aria-hidden="true"><path d="M2 13c10-10 20 10 29 0s19-10 29 0 19 10 29 0 19-10 29 0"/></svg>
+      <blockquote class="q-text" data-i="qq">«Το νερό είναι ρευστό, απαλό και ενδοτικό. Όμως το νερό φθείρει τον βράχο, που είναι άκαμπτος και δεν μπορεί να υποχωρήσει. Κατά κανόνα, ό,τι είναι ρευστό, απαλό και ενδοτικό θα υπερισχύσει όσων είναι άκαμπτα και σκληρά. Κι αυτό είναι ένα ακόμη παράδοξο: <strong>ό,τι είναι απαλό, είναι δυνατό.</strong>»</blockquote>
+      <figcaption>
+        <span class="q-line" aria-hidden="true"></span>
+        <cite data-i="qc">Λάο Τσε</cite>
+        <span class="q-line" aria-hidden="true"></span>
+      </figcaption>
+      <p class="orig" lang="en">“Water is fluid, soft, and yielding. But water will wear away rock, which is rigid and cannot yield. As a rule, whatever is fluid, soft, and yielding will overcome whatever is rigid and hard. This is another paradox: what is soft is strong.”</p>
+    </figure>
   </div>
 </section>
 </main>
@@ -751,6 +862,28 @@ footer .tag{margin-top:16px;color:#C9CBB8;max-width:34ch}
   lb.addEventListener('click',function(e){ if(e.target===lb) close(); });
   d.addEventListener('keydown',function(e){ if(e.key==='Escape'){ close(); menu(false); } });
 
+
+  // ===== v2 effects =====
+  var RM=matchMedia('(prefers-reduced-motion: reduce)').matches, HOV=matchMedia('(hover:hover) and (pointer:fine)').matches;
+  function splitChars(el){ var t=el.textContent; el.setAttribute('aria-label',t); el.innerHTML=[].map.call(t,function(c,i){return '<span class="ch" aria-hidden="true" style="--i:'+i+'">'+c+'</span>';}).join(''); }
+  function splitWords(el){ var n=0; (function walk(node){ [].slice.call(node.childNodes).forEach(function(c){ if(c.nodeType===3){ var f=d.createDocumentFragment(); c.textContent.split(/(\s+)/).forEach(function(w){ if(!w) return; if(/^\s+$/.test(w)){ f.appendChild(d.createTextNode(w)); } else { var sp=d.createElement('span'); sp.className='qw'; sp.style.setProperty('--i',n++); sp.textContent=w; f.appendChild(sp);} }); node.replaceChild(f,c);} else if(c.nodeType===1) walk(c); }); })(el); }
+  window.__fx=function(){ var h=d.querySelector('.h1w'); if(h&&!RM) splitChars(h); var q=d.querySelector('.q-text'); if(q&&!RM) splitWords(q); };
+  // progress bar
+  var pb=d.getElementById('progBar'), tick=false;
+  addEventListener('scroll',function(){ if(tick) return; tick=true; requestAnimationFrame(function(){ var m=html.scrollHeight-innerHeight; pb.style.setProperty('--sp', m>0?scrollY/m:0); tick=false; }); },{passive:true});
+  if(HOV && !RM){
+    // hero parallax
+    var art=d.querySelector('.hero-art'), hero=d.querySelector('.hero');
+    hero.addEventListener('pointermove',function(e){ var r=hero.getBoundingClientRect(); art.style.setProperty('--px',((e.clientX-r.left)/r.width-.5)*-22+'px'); art.style.setProperty('--py',((e.clientY-r.top)/r.height-.5)*-16+'px'); });
+    // spotlight on cards
+    d.querySelectorAll('.ecard,.way').forEach(function(c){ c.addEventListener('pointermove',function(e){ var r=c.getBoundingClientRect(); c.style.setProperty('--mx',(e.clientX-r.left)+'px'); c.style.setProperty('--my',(e.clientY-r.top)+'px'); if(c.classList.contains('way')){ c.style.transform='perspective(1000px) rotateX('+((e.clientY-r.top)/r.height-.5)*-4+'deg) rotateY('+((e.clientX-r.left)/r.width-.5)*5+'deg)'; } }); c.addEventListener('pointerleave',function(){ c.style.transform=''; }); });
+    // portrait tilt
+    var st=d.getElementById('pStage'), fr=st&&st.querySelector('.p-frame');
+    if(st) { st.addEventListener('pointermove',function(e){ var r=st.getBoundingClientRect(); fr.style.setProperty('--rx',((e.clientX-r.left)/r.width-.5)*8+'deg'); fr.style.setProperty('--ry',((e.clientY-r.top)/r.height-.5)*-8+'deg'); }); st.addEventListener('pointerleave',function(){ fr.style.setProperty('--rx','0deg'); fr.style.setProperty('--ry','0deg'); }); }
+    // magnetic buttons
+    d.querySelectorAll('.btn').forEach(function(bt){ bt.addEventListener('pointermove',function(e){ var r=bt.getBoundingClientRect(); bt.style.transform='translate('+((e.clientX-r.left)/r.width-.5)*8+'px,'+((e.clientY-r.top)/r.height-.5)*6+'px)'; }); bt.addEventListener('pointerleave',function(){ bt.style.transform=''; }); });
+  }
+
   // i18n
   var EN={
    skip:'Skip to content',n1:'Methexis',n2:'Individual & Group',n3:'The session',n4:'Cristina',n5:'FAQ',n6:'Book a session',
@@ -808,6 +941,7 @@ footer .tag{margin-top:16px;color:#C9CBB8;max-width:34ch}
   };
   var EL={}; d.querySelectorAll('[data-i]').forEach(function(el){ var k=el.getAttribute('data-i'); if(!(k in EL)) EL[k]=el.innerHTML; });
   EL.sb2='Λιγότερα';
+  __fx();
   var cur='el';
   window.T=function(k){ return (cur==='en'?EN:EL)[k]||EL[k]||''; };
   var META={el:{t:d.title,d:d.querySelector('meta[name=description]').content},en:{t:'Methexis | Embodied Energy Practice — Cristina Donica, East Attica',d:'Methexis: an experiential practice of personal growth through movement, breath, embodied meditation and Psychodrama. Individual and group sessions in East Attica.'}};
@@ -817,6 +951,7 @@ footer .tag{margin-top:16px;color:#C9CBB8;max-width:34ch}
     if(sb.getAttribute('aria-expanded')==='true') sb.querySelector('span').textContent=T('sb2');
     d.title=META[l].t; d.querySelector('meta[name=description]').content=META[l].d;
     d.querySelectorAll('.lang button').forEach(function(bt){ bt.setAttribute('aria-pressed', bt.dataset.lang===l); });
+    __fx(); var qc=d.querySelector('.q-card'); if(qc&&qc.classList.contains('in')) qc.classList.add('in');
     try{ localStorage.setItem('mx-lang',l); }catch(e){}
   }
   d.querySelectorAll('.lang button').forEach(function(bt){ bt.addEventListener('click',function(){ setLang(bt.dataset.lang); }); });
